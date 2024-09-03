@@ -8,7 +8,9 @@ services:
     networks:
       - todo_network
     depends_on:
-      - database
+      - mysqldb
+    volumes:
+      - /data/todo_backend_mysql
     
     
   frontend:
@@ -20,17 +22,16 @@ services:
     depends_on:
       - backend
 
-  database:
-    image: mysql:5.7
+  mysqldb:
+    image: mysql:latest
     networks:
       - todo_network
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE= todo_database
     volumes:
-      - data/mysql_todo
+      - /data/mysql
 
 networks:
   todo_network:
     driver: bridge
-
