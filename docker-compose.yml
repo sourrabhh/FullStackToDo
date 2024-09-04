@@ -23,12 +23,12 @@ services:
       - backend
 
   mysqldb:
-    image: mysql:latest
+    image: mysql:5.7
     networks:
       - todo_network
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE= todo_database
+      - MYSQL_DATABASE=mysql_todo
     volumes:
       - /data/mysql
 
