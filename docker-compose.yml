@@ -23,7 +23,7 @@ services:
       - backend
 
   mysqldb:
-    image: mysql:5.7
+    image: mysql
     networks:
       - todo_network
     environment:
