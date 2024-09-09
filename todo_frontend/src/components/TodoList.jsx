@@ -14,10 +14,20 @@ const TodoList = () => {
     fetchTodos();
   }, []);
 
+  // const fetchTodos = () => {
+  //   axios.get('http://localhost:8080/api/todos').then((response) => {
+  //     setTodos(response.data);
+  //   });
+  // };
+
   const fetchTodos = () => {
-    axios.get('http://localhost:8080/api/todos').then((response) => {
-      setTodos(response.data);
-    });
+    axios.get('http://localhost:8080/api/todos')
+      .then((response) => {
+        setTodos(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching todos:", error);
+      });
   };
 
   const addTodo = (title) => {
@@ -45,10 +55,30 @@ const TodoList = () => {
   };
 
   const deleteTodo = (id) => {
-    axios.delete(`http://localhost:8080/api/todos/${id}`).then(() => {
-      setTodos(todos.filter((t) => t.id !== id));
-    });
+    console.log("Deleting todo with id:", id);
+  
+    // Optimistically update UI by removing the todo
+    const updatedTodos = todos.filter(t => t.id !== id);
+    setTodos(updatedTodos);
+    
+    // Make the API call
+    axios.delete(`http://localhost:8080/api/todos/${id}`)
+      .then(() => {
+        console.log("Todo deleted successfully");
+      })
+      .catch(error => {
+        console.error("Error deleting todo:", error);
+        // If delete fails, revert the change
+        setTodos([...updatedTodos, todos.find(t => t.id === id)]);
+      });
   };
+  
+  // const deleteTodo = (id) => {
+  //   console.log("in delete todo")
+  //   axios.delete(`http://localhost:8080/api/todos/${id}`).then(() => {
+  //     setTodos(todos.filter((t) => t.id !== id));
+  //   });
+  // };
 
   return (
     <>
