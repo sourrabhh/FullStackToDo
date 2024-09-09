@@ -1,101 +1,51 @@
-// src/components/TodoList.js
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { List, Typography } from '@mui/material';
 import TodoItem from './TodoItem';
 import TodoForm from './TodoForm';
-import { TransitionGroup } from 'react-transition-group';
+import { todosState, todosQuery, toggleTodo, deleteTodo } from './todoState';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import './TodoList.css'; // Import CSS for transitions
 
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useRecoilState(todosState);
+  const fetchedTodos = useRecoilValue(todosQuery);
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    setTodos(fetchedTodos);
+  }, [fetchedTodos, setTodos]);
 
-  // const fetchTodos = () => {
-  //   axios.get('http://localhost:8080/api/todos').then((response) => {
-  //     setTodos(response.data);
-  //   });
-  // };
-
-  const fetchTodos = () => {
-    axios.get('http://localhost:8080/api/todos')
-      .then((response) => {
-        setTodos(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching todos:", error);
-      });
+  const handleToggle = async (id) => {
+    await toggleTodo(id, setTodos);
   };
 
-  const addTodo = (title) => {
-    axios
-      .post('http://localhost:8080/api/todos', { title, completed: false })
-      .then((response) => {
-        setTodos([response.data, ...todos]);
-      });
+  const handleDelete = async (id) => {
+    await deleteTodo(id, setTodos);
   };
-
-  const toggleTodo = (id) => {
-    const todo = todos.find((t) => t.id === id);
-    axios
-      .put(`http://localhost:8080/api/todos/${id}`, {
-        ...todo,
-        completed: !todo.completed,
-      })
-      .then((response) => {
-        setTodos(
-          todos.map((t) =>
-            t.id === id ? { ...t, completed: response.data.completed } : t
-          )
-        );
-      });
-  };
-
-  const deleteTodo = (id) => {
-    console.log("Deleting todo with id:", id);
-  
-    // Optimistically update UI by removing the todo
-    const updatedTodos = todos.filter(t => t.id !== id);
-    setTodos(updatedTodos);
-    
-    // Make the API call
-    axios.delete(`http://localhost:8080/api/todos/${id}`)
-      .then(() => {
-        console.log("Todo deleted successfully");
-      })
-      .catch(error => {
-        console.error("Error deleting todo:", error);
-        // If delete fails, revert the change
-        setTodos([...todos]);
-      });
-  };
-  
-  // const deleteTodo = (id) => {
-  //   console.log("in delete todo")
-  //   axios.delete(`http://localhost:8080/api/todos/${id}`).then(() => {
-  //     setTodos(todos.filter((t) => t.id !== id));
-  //   });
-  // };
 
   return (
     <>
-      <TodoForm addTodo={addTodo} />
+      <TodoForm />
       <Typography variant="h5" gutterBottom>
         Your Tasks
       </Typography>
-      <TransitionGroup>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-          />
-        ))}
-      </TransitionGroup>
+      <List>
+        <TransitionGroup>
+          {todos.map((todo) => (
+            <CSSTransition
+              key={todo.id}
+              timeout={300}
+              classNames="fade"
+            >
+              <TodoItem
+                todo={todo}
+                onToggle={() => handleToggle(todo.id)}
+                onDelete={() => handleDelete(todo.id)}
+              />
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
+      </List>
     </>
   );
 };

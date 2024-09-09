@@ -1,25 +1,28 @@
 // src/components/TodoForm.js
 
 import React, { useState } from 'react';
-import { TextField, Button, Paper, Box } from '@mui/material';
+import { useSetRecoilState } from 'recoil';
+import { TextField, Button, Paper, Box, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { todosState, addTodo } from './todoState';
 
-const TodoForm = ({ addTodo }) => {
+const TodoForm = () => {
   const [newTodo, setNewTodo] = useState('');
+  const [loading, setLoading] = useState(false);
+  const setTodos = useSetRecoilState(todosState);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (newTodo.trim() !== '') {
-      addTodo(newTodo);
+      setLoading(true);
+      await addTodo(newTodo, setTodos);
       setNewTodo('');
+      setLoading(false);
     }
   };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{ padding: 2, marginBottom: 4 }}
-    >
+    <Paper elevation={3} sx={{ padding: 2, marginBottom: 4 }}>
       <form onSubmit={handleSubmit}>
         <Box display="flex" alignItems="center">
           <TextField
@@ -28,6 +31,7 @@ const TodoForm = ({ addTodo }) => {
             fullWidth
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
+            disabled={loading}
           />
           <Button
             type="submit"
@@ -35,8 +39,9 @@ const TodoForm = ({ addTodo }) => {
             variant="contained"
             size="large"
             sx={{ marginLeft: 2, padding: '16px' }}
+            disabled={loading}
           >
-            <AddIcon />
+            {loading ? <CircularProgress size={24} /> : <AddIcon />}
           </Button>
         </Box>
       </form>
