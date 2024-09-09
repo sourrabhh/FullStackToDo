@@ -69,7 +69,7 @@ const TodoList = () => {
       .catch(error => {
         console.error("Error deleting todo:", error);
         // If delete fails, revert the change
-        setTodos([...updatedTodos, todos.find(t => t.id === id)]);
+        setTodos([...todos]);
       });
   };
   
