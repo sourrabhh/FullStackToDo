@@ -1,0 +1,37 @@
+# version: "3.8"
+
+services:
+  backend: 
+    image: todo_backend
+    ports:
+      - 8080:8080
+    networks:
+      - todo_network
+    depends_on:
+      - mysqldb
+    volumes:
+      - /data/todo_backend_mysql
+    
+    
+  frontend:
+    image: todo_frontend
+    ports:
+      - 3000:3000
+    networks:
+      - todo_network
+    depends_on:
+      - backend
+
+  mysqldb:
+    image: mysql
+    networks:
+      - todo_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mysql_todo
+    volumes:
+      - ./docker_volume :/var/lib/mysql
+
+networks:
+  todo_network:
+    driver: bridge

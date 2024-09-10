@@ -1,0 +1,9 @@
+/todo_backend/target
+/todo_backend/src/main/resources/application.properties
+
+/docker_volume/
+
+/todo_frontend/node_modules
+
+.DS_Store
+
