@@ -12,7 +12,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/todos")
-@CrossOrigin(origins = "http://localhost:3000") // Adjust as per your frontend URL
+//@CrossOrigin(origins = "http://localhost:3000") // Adjust as per your frontend URL
+@CrossOrigin(origins = "ae4160162054a400087b6a34a6db22e8-966672813.us-east-1.elb.amazonaws.com:3000") 
 public class TodoController {
 
     @Autowired
