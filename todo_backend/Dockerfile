@@ -1,11 +1,21 @@
 
-# Use a minimal base image
+FROM maven:3.9.8-eclipse-temurin-21 AS build
+
+WORKDIR /usr/src/app
+
+COPY pom.xml ./
+
+COPY src  ./src
+
+RUN mvn clean package -DskipTests
+
+
 FROM gcr.io/distroless/java17-debian12
 
-# Copy the JAR file from the build stage
-COPY  target/todo_backend.jar /usr/app/todo_backend.jar
-
 WORKDIR /usr/app
+
+# Copy the JAR file from the build stage
+COPY --from=build  /usr/src/app/target/todo_backend.jar /usr/app/todo_backend.jar
 
 EXPOSE 8080
 
