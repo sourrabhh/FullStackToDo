@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dbconfigmap
+  labels:
+    storage: dbstorage
+data:
+  dbhost: dbservice
+  dbschema: tododb
+  dbport: "3306"
+...

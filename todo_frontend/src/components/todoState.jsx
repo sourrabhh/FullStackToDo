@@ -1,6 +1,9 @@
 import { atom, selector } from 'recoil';
 import axios from 'axios';
 
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+
 // Atom to store todos state
 export const todosState = atom({
   key: 'todosState',
@@ -12,7 +15,7 @@ export const todosQuery = selector({
   key: 'todosQuery',
   get: async () => {
     try {
-      const response = await axios.get('http://backendservice:8080/api/todos');
+      const response = await axios.get(`${BACKEND_URL}/api/todos`);
       return response.data;
     } catch (error) {
       console.error('Error fetching todos:', error);
@@ -24,7 +27,8 @@ export const todosQuery = selector({
 // Async function to add a todo
 export const addTodo = async (newTodoTitle, setTodos) => {
   try {
-    const response = await axios.post('http://backendservice:8080/api/todos', {
+    
+    const response = await axios.post(`${BACKEND_URL}/api/todos`, {
       title: newTodoTitle,
       completed: false,
     });
@@ -37,8 +41,8 @@ export const addTodo = async (newTodoTitle, setTodos) => {
 // Async function to toggle a todo's completed state
 export const toggleTodo = async (todoId, setTodos) => {
   try {
-    const currentTodo = await axios.get(`http://backendservice:8080/api/todos/${todoId}`);
-    const response = await axios.put(`http://backendservice:8080/api/todos/${todoId}`, {
+    const currentTodo = await axios.get(`${BACKEND_URL}/api/todos/${todoId}`);
+    const response = await axios.put(`${BACKEND_URL}/api/todos/${todoId}`, {
       ...currentTodo.data,
       completed: !currentTodo.data.completed
     });
@@ -57,7 +61,7 @@ export const deleteTodo = async (todoId, setTodos) => {
   try {
 
     // await axios.delete(`http://localhost:8080/api/todos/${todoId}`);
-    await axios.delete(`http://backendservice:8080/api/todos/${todoId}`);
+    await axios.delete(`${BACKEND_URL}/api/todos/${todoId}`);
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== todoId));
   } catch (error) {
     console.error('Error deleting todo:', error);

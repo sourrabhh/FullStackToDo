@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: frontend-deployment
+  labels:
+    app: frontend 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontendpod 
+  template:
+    metadata: 
+      labels:
+        app: frontendpod
+    spec:
+      containers:
+        - name: frontend-container
+          image: sourabh2411/todo_frontend:latest 
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_BACKEND_URL
+              value: "http://192.168.31.126:30785"   # 30785 port assigned to backend service
+---
+apiVersion: v1 
+kind: Service
+metadata: 
+  name: frontendservice 
+  labels:
+    app: frontnendservice 
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30786
+  selector:
+    app: frontendpod 
+...
+
+# 192.168.31.126

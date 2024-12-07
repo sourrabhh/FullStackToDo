@@ -1,7 +1,7 @@
 
 services:
   backend:
-    image: todo_backend
+    build: ./todo_backend
     ports:
       - 8080:8080
     networks:
@@ -12,7 +12,7 @@ services:
       - backend_data:/data/todo_backend_mysql
     
   frontend:
-    image: todo_frontend
+    build: ./todo_frontend
     ports:
       - 3000:3000
     networks:
@@ -26,7 +26,7 @@ services:
       - todo_network
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=mysql_todo
+      - MYSQL_DATABASE=tododb
     volumes:
       - mysql_data:/var/lib/mysql
 

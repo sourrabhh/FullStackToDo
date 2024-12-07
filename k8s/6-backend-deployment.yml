@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backenddeployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backendpod
+  template:
+    metadata:
+      labels: 
+        app: backendpod
+    spec:
+      containers:
+        - name: backendcontainer
+          image: sourabh2411/todo_backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: dbhost
+              valueFrom:
+                configMapKeyRef:
+                  name: dbconfigmap
+                  key: dbhost
+            - name: dbschema
+              valueFrom:
+                configMapKeyRef:
+                  name: dbconfigmap
+                  key: dbschema
+            - name: dbport
+              valueFrom:
+                configMapKeyRef:
+                  name: dbconfigmap
+                  key: dbport
+            - name: dbusername
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: dbusername
+            - name: dbpassword
+              valueFrom:
+                secretKeyRef:
+                  name: dbsecret
+                  key: dbpassword
+---
+#Backend Service
+apiVersion: v1
+kind: Service
+metadata: 
+  name: backendservice
+  labels:
+    app: backendpod
+spec: 
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30785
+  selector: 
+    app: backendpod
+...
